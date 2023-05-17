@@ -1,12 +1,12 @@
 # ESP32/ESP8266 Exception Decoder for Generation Klick
 
-So in their endless wisdom the Arduino IDE has different priorities than to recreate the 
+So in their endless wisdom the Arduino IDE 2.0 has different priorities than to recreate the 
 old infrastructure and https://github.com/me-no-dev/EspExceptionDecoder does not work anymore.
 
-And /me being to lazy to use the existing command line version from 
+And /me being too lazy to use the existing command line version from 
 https://github.com/littleyoda/EspStackTraceDecoder does instead build a C# WPF app to help me.
 
-This is a work in progress thing. I do debugging as I need. 
+This is a work in progress thing. I do enhancements, fixes and debugging as I need. 
 
 # How it looks
 
