@@ -5,6 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 using static System.Net.Mime.MediaTypeNames;
 using System.IO;
+using ICSharpCode.AvalonEdit;
 
 namespace ESPEDfGK
 {
@@ -14,6 +15,7 @@ namespace ESPEDfGK
         Konfiguration konfiguration = null;
         KonfigurationsHlpr hlpr = new();
         Addr2Line a2l = new();
+        HighlightCurrentLineBackgroundRenderer HCLBR;
 
         //*****************************************************************************************
         public MainWindow()
@@ -23,7 +25,6 @@ namespace ESPEDfGK
             konfiguration = hlpr.LadeEinstellungen();
             new ExceptionLogger(konfiguration.LoggerDateiname());
 
-
             uiScaler.ScaleX = konfiguration.Ink(konfiguration.UIScale, 1.0);
             uiScaler.ScaleY = konfiguration.Ink(konfiguration.UIScale, 1.0);
 
@@ -32,9 +33,14 @@ namespace ESPEDfGK
             Height = konfiguration.Ink(konfiguration.Height, Height);
             Width = konfiguration.Ink(konfiguration.Width, Width);
 
+            // Zeile visualisieren
+            HCLBR = new HighlightCurrentLineBackgroundRenderer(TBSourceCodeFilecontent);
+            TBSourceCodeFilecontent.TextArea.TextView.BackgroundRenderers.Add(HCLBR);
+
             tbaddr2line.Text = konfiguration.Addr2LineExe;
             TBStackdump.Text = konfiguration.Stackdump;
             TBElffile.Text = konfiguration.ElfFile;
+            TBStackdump.Height = konfiguration.Ink(konfiguration.SplitHeight, TBStackdump.Height);
 
             LBExceptionList.Items.Clear();
             LBExceptionList.ItemsSource = a2l.DataList;
@@ -52,6 +58,7 @@ namespace ESPEDfGK
             konfiguration.Addr2LineExe = tbaddr2line.Text;
             konfiguration.Stackdump = TBStackdump.Text;
             konfiguration.ElfFile = TBElffile.Text;
+            konfiguration.SplitHeight = TBStackdump.Height;
 
             hlpr.SpeichereEinstellungen(konfiguration);
         }
@@ -107,8 +114,10 @@ namespace ESPEDfGK
 
             if (File.Exists(scf))
             {
-                TBSourceCodeFilecontent.Text = File.ReadAllText(scf);
                 int linenr = int.Parse(item.SourcecodeLine);
+
+                HCLBR.LineNumber = linenr;
+                TBSourceCodeFilecontent.Text = File.ReadAllText(scf);
                 TBSourceCodeFilecontent.ScrollTo(linenr, 0);
             }
         }

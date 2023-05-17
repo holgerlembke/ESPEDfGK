@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ESPEDfGK"
+        xmlns:dpsplit="clr-namespace:System.Windows.Controls;assembly=DockPanelSplitter"
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         mc:Ignorable="d"
         Closing="Window_Closing"
@@ -46,14 +47,14 @@
                                     Click="BTFindElffile"
                                     Margin="4,2,4,0" />
                     </Grid>
-                    <Label DockPanel.Dock="Top">Exception-Dump:</Label>
+                    <Label DockPanel.Dock="Top">Exception-Dump (Copy from Serial Monitor):</Label>
                     <TextBox DockPanel.Dock="Top" Name="TBStackdump" TextWrapping="Wrap" AcceptsReturn="True" 
                                  Margin="10,0,3,0" Height="Auto">
                     </TextBox>
-                    <Separator DockPanel.Dock="Top"/>
+                    <dpsplit:DockPanelSplitter Name="DPSsplitter" DockPanel.Dock="Top"/>
                     <Grid DockPanel.Dock="Top">
                         <!-- weil links+rechts -->
-                        <Label Width="Auto">Stack Trace:</Label>
+                        <Label Width="Auto">Stack Trace (Click to show source):</Label>
                         <Button HorizontalAlignment="Right" 
                                 Click="BTAnalyze"
                                 Margin="0,3,3,3" Padding="5,0,5,0">Analyze it</Button>
@@ -62,7 +63,7 @@
                              Margin="10,0,3,0">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
-                                <EventSetter Event="MouseDoubleClick" Handler="SenderDoppelClick" />
+                                <EventSetter Event="MouseUp" Handler="SenderDoppelClick" />
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.Resources>
