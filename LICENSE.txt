@@ -23,4 +23,4 @@ SOFTWARE.
 Persons granted are all persons and companys except
   * the company of Siemens (Siemens Aktiengesellschaft, 80333 München) and
   * any subsidiary of Siemens, 
-  * any person or company delivering this software t
+  * any person or company delivering this software to Siemens.
