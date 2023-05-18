@@ -1,7 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.VisualBasic;
+using System.Collections;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Automation;
 using System.Windows.Documents;
 
@@ -20,6 +23,7 @@ namespace ESPEDfGK
     class Addr2Line
     {
         public ObservableCollection<TraceItem> DataList = new();
+        private Hashtable registers = new();
 
         //*****************************************************************************************
         string subexec(string addr2lineexe, string elffilename, string addrlist)
@@ -67,17 +71,70 @@ namespace ESPEDfGK
             return "";
         }
 
-        // Backtrace: 0x400f143e:0x3ffb2240 0x400d1386:0x3ffb2260 0x400d25d2:0x3ffb2290
+        //*****************************************************************************************
+        void buildregistercollection(string exceptiondump)
+        /*
+         
 
+esp32
+
+PC      : 0x400f1441  PS      : 0x00060830  A0      : 0x800d1389  A1      : 0x3ffb2240  
+A2      : 0x00000005  A3      : 0x00000003  A4      : 0x00000078  A5      : 0x00000003  
+A6      : 0x00000001  A7      : 0x0000e100  A8      : 0x800d18c0  A9      : 0x3ffb2220  
+A10     : 0x0000002a  A11     : 0x3f400120  A12     : 0x00000000  A13     : 0x00000000  
+A14     : 0x3ffb7c80  A15     : 0x00000000  SAR     : 0x00000003  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x0000002c  LBEG    : 0x400876b5  LEND    : 0x400876c5  LCOUNT  : 0xfffffffe  
+
+Backtrace: 0x400f143e:0x3ffb2240 0x400d1386:0x3ffb2260 0x400d25d2:0x3ffb2290
+
+Backtrace is PC:SP-pairs (program counter, stack pointer). sp is ignored by addr2line-tool.
+
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-errors.html
+
+         */
+        {
+            int i = exceptiondump.IndexOf("PC ");
+            if (i > -1)
+            {
+                exceptiondump = exceptiondump.Remove(0, i);
+
+                i = exceptiondump.IndexOf("LCOUNT");
+                if (i > -1)
+                {
+                    exceptiondump = exceptiondump.Remove(i + 20);
+                    exceptiondump = exceptiondump.Replace("\r\n", " ");
+                    exceptiondump = exceptiondump.Replace(": ", " : ");
+
+                    do
+                    {
+                        exceptiondump = exceptiondump.Replace("  ", " ");
+                    } while (exceptiondump.Contains("  "));
+
+                    exceptiondump = exceptiondump.Replace(" : ", ":");
+
+                    string[] r = exceptiondump.Split(" ");
+
+                    foreach (string s in r)
+                    {
+                        string[] l = s.Split(":");
+                        registers.Add(l[0], l[1]);
+                    }
+                }
+            }
+        }
 
         //*****************************************************************************************
         public void Execute(string addr2lineexe, string elffilename, string exceptiondump)
         {
             DataList.Clear();
 
+            buildregistercollection(exceptiondump);
+
             string bt = findBacktrace(exceptiondump);
             if (bt != "")
             {
+                bt = registers["PC"] + ":" + registers["PC"]+" "+bt;
+
                 string output = subexec(addr2lineexe, elffilename, bt);
 
                 string[] lines = output.Split("\r\n");
@@ -103,11 +160,11 @@ namespace ESPEDfGK
                         else
                         {
                             ti.Addr = lines[i].Substring(0, j);
-                            lines[i] = lines[i].Remove(0, j + 2);
+                            lines[i] = lines[i].Remove(0, j + 2).Trim();
                         }
 
                         j = lines[i].IndexOf(" at ");
-                        ti.Name = lines[i].Substring(0, j);
+                        ti.Name = lines[i].Substring(0, j).Trim();
                         lines[i] = lines[i].Remove(0, j + 3);
 
                         j = lines[i].Length - 1;
