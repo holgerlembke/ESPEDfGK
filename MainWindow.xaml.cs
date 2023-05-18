@@ -14,7 +14,6 @@ namespace ESPEDfGK
     {
         Konfiguration konfiguration = null;
         KonfigurationsHlpr hlpr = new();
-        Addr2Line a2l = new();
         HighlightCurrentLineBackgroundRenderer HCLBR;
 
         //*****************************************************************************************
@@ -41,9 +40,6 @@ namespace ESPEDfGK
             TBStackdump.Text = konfiguration.Stackdump;
             TBElffile.Text = konfiguration.ElfFile;
             TBStackdump.Height = konfiguration.Ink(konfiguration.SplitHeight, TBStackdump.Height);
-
-            LBExceptionList.Items.Clear();
-            LBExceptionList.ItemsSource = a2l.DataList;
         }
 
         //*****************************************************************************************
@@ -100,8 +96,15 @@ namespace ESPEDfGK
         //*****************************************************************************************
         private void BTAnalyze(object sender, RoutedEventArgs e)
         {
-            a2l.Execute(tbaddr2line.Text, TBElffile.Text, TBStackdump.Text);
+            Addr2LineDecider decider = new();
+            Addr2LineBase analyzer = decider.Decide(TBStackdump.Text);
 
+            LBStyleInfo.Content = "Dump intepreted as: " + analyzer.AnalyserType();
+
+            analyzer.Execute(tbaddr2line.Text, TBElffile.Text, TBStackdump.Text);
+
+            LBExceptionList.Items.Clear();
+            LBExceptionList.ItemsSource = analyzer.DataList;
         }
 
         //*****************************************************************************************

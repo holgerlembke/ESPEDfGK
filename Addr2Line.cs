@@ -10,6 +10,7 @@ using System.Windows.Documents;
 
 namespace ESPEDfGK
 {
+    //*****************************************************************************************
     class TraceItem : INotifyPropertyChanged
     {
         public string Addr { get; set; }
@@ -20,13 +21,18 @@ namespace ESPEDfGK
         public event PropertyChangedEventHandler? PropertyChanged;
     }
 
-    class Addr2Line
+    //*****************************************************************************************
+    abstract class Addr2LineBase
     {
         public ObservableCollection<TraceItem> DataList = new();
-        private Hashtable registers = new();
+        protected Hashtable registers = new();
+        public abstract void Execute(string addr2lineexe, string elffilename, string exceptiondump);
+        public abstract string AnalyserType();
+
+        public string addr2lineoutputresult;
 
         //*****************************************************************************************
-        string subexec(string addr2lineexe, string elffilename, string addrlist)
+        protected string subexec(string addr2lineexe, string elffilename, string addrlist)
         {
             // Start the child process.
             Process p = new Process();
@@ -49,11 +55,72 @@ namespace ESPEDfGK
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
+            addr2lineoutputresult = output;
             return output;
         }
 
         //*****************************************************************************************
-        string findBacktrace(string exceptiondump)
+        protected void prozessadd2lineoutput(string addr2lineexe, string elffilename, string BackTrace)
+        {
+            string output = subexec(addr2lineexe, elffilename, BackTrace);
+
+            string[] lines = output.Split("\r\n");
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = lines[i].Trim();
+
+                if (lines[i] != "")
+                {
+                    TraceItem ti = new();
+                    int j = lines[i].IndexOf(": ");
+                    if (j == -1)
+                    {
+                        // (inlined by)
+                        j = lines[i].IndexOf("(inlined by)");
+                        if (j > -1)
+                        {
+                            lines[i] = lines[i].Remove(j, 12).Trim();
+                            ti.Addr = "inlined by ";
+                        }
+                    }
+                    else
+                    {
+                        ti.Addr = lines[i].Substring(0, j);
+                        lines[i] = lines[i].Remove(0, j + 2).Trim();
+                    }
+
+                    j = lines[i].IndexOf(" at ");
+                    if (j >= 0)
+                    {
+                        ti.Name = lines[i].Substring(0, j).Trim();
+                        lines[i] = lines[i].Remove(0, j + 3);
+
+                        j = lines[i].Length - 1;
+                        while ((j > 0) && (lines[i][j] != ':'))
+                        {
+                            j--;
+                        }
+                        ti.SourcecodeFile = lines[i].Substring(0, j).Trim();
+                        ti.SourcecodeLine = lines[i].Substring(j + 1, lines[i].Length - j - 1).Trim();
+
+                        DataList.Add(ti);
+                    }
+                }
+            }
+        }
+    }
+
+    //*****************************************************************************************
+    class Addr2LineEsp32 : Addr2LineBase
+    {
+        public override string AnalyserType()
+        {
+            return "ESP32";
+        }
+
+        //*****************************************************************************************
+        private string findBacktrace(string exceptiondump)
         {
             int i = exceptiondump.IndexOf(StringContent.backtrace);
 
@@ -72,7 +139,7 @@ namespace ESPEDfGK
         }
 
         //*****************************************************************************************
-        void buildregistercollection(string exceptiondump)
+        private void buildregistercollection(string exceptiondump)
         /*
          
 
@@ -90,6 +157,13 @@ Backtrace: 0x400f143e:0x3ffb2240 0x400d1386:0x3ffb2260 0x400d25d2:0x3ffb2290
 Backtrace is PC:SP-pairs (program counter, stack pointer). sp is ignored by addr2line-tool.
 
 https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-errors.html
+
+
+0x400f143e: exA() at D:\Arduino\sketches2.0\exceptiontestcode/exc1.ino:8
+0x400d1386: exB() at D:\Arduino\sketches2.0\exceptiontestcode/exc1.ino:15
+ (inlined by) exC() at D:\Arduino\sketches2.0\exceptiontestcode/exc1.ino:19
+ (inlined by) setup() at D:\Arduino\sketches2.0\exceptiontestcode/exceptiontestcode.ino:9
+0x400d25d2: loopTask(void *) at C:\Users\holger2\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32/main.cpp:42
 
          */
         {
@@ -124,7 +198,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
         }
 
         //*****************************************************************************************
-        public void Execute(string addr2lineexe, string elffilename, string exceptiondump)
+        public override void Execute(string addr2lineexe, string elffilename, string exceptiondump)
         {
             DataList.Clear();
 
@@ -133,62 +207,51 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
             string bt = findBacktrace(exceptiondump);
             if (bt != "")
             {
-                bt = registers["PC"] + ":" + registers["PC"]+" "+bt;
-
-                string output = subexec(addr2lineexe, elffilename, bt);
-
-                string[] lines = output.Split("\r\n");
-
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    lines[i] = lines[i].Trim();
-
-                    if (lines[i] != "")
-                    {
-                        TraceItem ti = new();
-                        int j = lines[i].IndexOf(": ");
-                        if (j == -1)
-                        {
-                            // (inlined by)
-                            j = lines[i].IndexOf("(inlined by)");
-                            if (j > -1)
-                            {
-                                lines[i] = lines[i].Remove(j, 12).Trim();
-                                ti.Addr = "inlined by ";
-                            }
-                        }
-                        else
-                        {
-                            ti.Addr = lines[i].Substring(0, j);
-                            lines[i] = lines[i].Remove(0, j + 2).Trim();
-                        }
-
-                        j = lines[i].IndexOf(" at ");
-                        ti.Name = lines[i].Substring(0, j).Trim();
-                        lines[i] = lines[i].Remove(0, j + 3);
-
-                        j = lines[i].Length - 1;
-                        while ((j > 0) && (lines[i][j] != ':'))
-                        {
-                            j--;
-                        }
-                        ti.SourcecodeFile = lines[i].Substring(0, j).Trim();
-                        ti.SourcecodeLine = lines[i].Substring(j + 1, lines[i].Length - j - 1).Trim();
-
-                        DataList.Add(ti);
-                    }
-                }
+                bt = registers["PC"] + ":" + registers["PC"] + " " + bt;
+                prozessadd2lineoutput(addr2lineexe, elffilename, bt);
             }
         }
     }
+
+    //*****************************************************************************************
+    class Addr2LineEsp8266 : Addr2LineBase
+    {
+        //*****************************************************************************************
+        public override string AnalyserType()
+        {
+            return "ESP8266";
+        }
+        //*****************************************************************************************
+        public override void Execute(string addr2lineexe, string elffilename, string exceptiondump)
+        {
+            DataList.Clear();
+
+            // buildregistercollection(exceptiondump);
+
+            string bt = "0x3fffffc0:0xdead 0xfeefeffe:0xdead 0xfeefeffe:0xdead 0x3fffdab0:0xdead 0x40100d19:0xdead"; 
+            if (bt != "")
+            {
+                // bt = registers["PC"] + ":" + registers["PC"] + " " + bt;
+                prozessadd2lineoutput(addr2lineexe, elffilename, bt);
+            }
+        }
+    }
+
+    //*****************************************************************************************
+    // esp32 or esp8288 stack dumpp?
+    class Addr2LineDecider
+    {
+        public Addr2LineBase Decide(string exceptiondump)
+        {
+            if (exceptiondump.IndexOf(">stack>")>0)
+            {
+                return new Addr2LineEsp8266();
+            }
+            else
+            {
+                return new Addr2LineEsp32();
+            }
+            return null; // nah. :-)
+        }
+    }
 }
-
-/*
-0x400f143e: exA() at D:\Arduino\sketches2.0\exceptiontestcode/exc1.ino:8
-0x400d1386: exB() at D:\Arduino\sketches2.0\exceptiontestcode/exc1.ino:15
- (inlined by) exC() at D:\Arduino\sketches2.0\exceptiontestcode/exc1.ino:19
- (inlined by) setup() at D:\Arduino\sketches2.0\exceptiontestcode/exceptiontestcode.ino:9
-0x400d25d2: loopTask(void *) at C:\Users\holger2\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32/main.cpp:42
-*/
-
-

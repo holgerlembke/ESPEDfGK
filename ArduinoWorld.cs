@@ -38,8 +38,8 @@ downloads: c:\Users\holger2\AppData\Local\Arduino15\staging
         public string[] FindElfFile()
         {
             string p = SketchFolder();
-            string[] allFiles = Directory.GetFiles(p, "*.elf", SearchOption.AllDirectories);
-            return allFiles;
+            FileListGetter flg = new();
+            return flg.filelist(p, "*.elf", true);
         }
 
     }

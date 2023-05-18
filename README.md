@@ -12,6 +12,12 @@ This is a work in progress thing. I do enhancements, fixes and debugging as I ne
 
 ![this is it](https://raw.githubusercontent.com/holgerlembke/ESPEDfGK/master/screenshots/screen.png)
 
+# Usage hints
+
+ESP8266 is largely non existant, because I currently don't use it.
+
+ESP32 should work well.
+
 # Install
 
 * Download https://github.com/holgerlembke/ESPEDfGK/raw/master/release/files.zip

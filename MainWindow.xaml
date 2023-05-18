@@ -53,11 +53,18 @@
                     </TextBox>
                     <dpsplit:DockPanelSplitter Name="DPSsplitter" DockPanel.Dock="Top"/>
                     <Grid DockPanel.Dock="Top">
-                        <!-- weil links+rechts -->
-                        <Label Width="Auto">Stack Trace (Click to show source):</Label>
-                        <Button HorizontalAlignment="Right" 
-                                Click="BTAnalyze"
-                                Margin="0,3,3,3" Padding="5,0,5,0">Analyze it</Button>
+                        <DockPanel>
+                            <Label DockPanel.Dock="Left" Width="Auto">Stack Trace (Click to show source):</Label>
+
+                            <Button DockPanel.Dock="Right" 
+                                    Click="BTAnalyze"
+                                    Margin="0,5,0,5"
+                                    Padding="5,0,5,0">Analyze it</Button>
+                            
+                            <Label DockPanel.Dock="Right" Name="LBStyleInfo"></Label>
+                            <!-- fill space -->
+                            <Label></Label>
+                        </DockPanel>
                     </Grid>
                     <ListView DockPanel.Dock="Top" x:Name="LBExceptionList"
                              Margin="10,0,3,0">

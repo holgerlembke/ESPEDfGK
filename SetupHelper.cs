@@ -11,14 +11,11 @@ namespace ESPEDfGK
     {
         public string[] findAddr2LineExe()
         {
-            string p = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-                + Path.DirectorySeparatorChar+
-                    StringContent.arduino15;
+            string p = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)+ 
+                                Path.DirectorySeparatorChar+StringContent.arduino15;
 
-            string[] allFiles = Directory.GetFiles(p, StringContent.xtensaaddr2line, 
-                                                      SearchOption.AllDirectories);
+            FileListGetter flg = new();
 
-            return allFiles;
-        }
+            return flg.filelist(p, StringContent.xtensaaddr2line,false);        }
     }
 }
