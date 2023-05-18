@@ -17,3 +17,8 @@ This is a work in progress thing. I do enhancements, fixes and debugging as I ne
 * Download https://github.com/holgerlembke/ESPEDfGK/raw/master/release/files.zip
 * Unzip at a convenient place.
 * Use.
+
+# Dependancies
+
+* at least .NET 6.0 is needed
+* https://dotnet.microsoft.com/en-us/download

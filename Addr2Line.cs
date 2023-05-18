@@ -10,10 +10,10 @@ using System.Windows.Documents;
 
 namespace ESPEDfGK
 {
-    public class ExceptionnStringList
+    public static class ExceptionStringList
     {
         // https://links2004.github.io/Arduino/dc/deb/md_esp8266_doc_exception_causes.html
-        public readonly string[] list =
+        public static readonly string[] list =
         {
             @"Illegal instruction",
             @"SYSCALL instruction",
@@ -256,7 +256,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
     //*****************************************************************************************
     class Addr2LineEsp8266 : Addr2LineBase
     {
-        private const string postfix = ":0xdead";
+        private const string postfix = ":0xdead"; // not really needed, but...
 
         //*****************************************************************************************
         public override string AnalyserType()
@@ -356,7 +356,6 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
             bt = registers["epc1"] + postfix + " " + bt;
             if (bt != "")
             {
-                // bt = registers["PC"] + ":" + registers["PC"] + " " + bt;
                 prozessadd2lineoutput(addr2lineexe, elffilename, bt);
             }
         }
@@ -366,6 +365,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
     // esp32 or esp8288 stack dumpp?
     class Addr2LineDecider
     {
+        //*****************************************************************************************
         public Addr2LineBase Decide(string exceptiondump)
         {
             if (exceptiondump.IndexOf(">stack>") > 0)
