@@ -103,7 +103,8 @@ namespace ESPEDfGK
 
             analyzer.Execute(tbaddr2line.Text, TBElffile.Text, TBStackdump.Text);
 
-            LBExceptionList.Items.Clear();
+            LBExceptionList.ItemsSource = null;
+            LBExceptionList.Items.Clear(); // der xaml-code könnnte daten liefern....
             LBExceptionList.ItemsSource = analyzer.DataList;
         }
 
