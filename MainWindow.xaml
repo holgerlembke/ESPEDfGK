@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:ESPEDfGK"
         xmlns:dpsplit="clr-namespace:System.Windows.Controls;assembly=DockPanelSplitter"
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-        mc:Ignorable="d"
+        mc:Ignorable="d" 
         Closing="Window_Closing"
+        Icon="pack://application:,,,/wicon.ico"
         Title="ESP32/ESP8266 Exception Decoder for Generation Klick" Height="450" Width="800">
     <Window.Resources>
         <Style TargetType="ListViewItem">
@@ -31,9 +32,50 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <ComboBox Name="TBElffile" HorizontalAlignment="Stretch" 
-                                          IsEditable="True"
-                                         Grid.Row="0" Grid.Column="0" Margin="10,0,4,0"/>
+
+                        <!--- -->
+                        <ComboBox Name="TBElffile" IsEditable="True" IsReadOnly="False"
+                                  ItemsSource="{Binding}" Margin="10,0,4,0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Margin="0" Text="{Binding FileName}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ComboBoxItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <Grid x:Name="cg" TextElement.Foreground="Black">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Padding="5,0,5,2" Grid.Column="0" Text="{Binding FileName}"/>
+                                                    <TextBlock Margin="0" Grid.Column="1" 
+                                                               Text="{Binding LastChange, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}"/>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="ComboBoxItem.IsSelected" Value="True">
+                                                        <Setter TargetName="cg"  Property="Background" 
+                                                                                 Value="Lightgray"></Setter>
+                                                        <Setter TargetName="cg"  Property="TextElement.Foreground" 
+                                                                                 Value="White"></Setter>
+                                                    </Trigger>
+                                                    <Trigger Property="ComboBoxItem.IsMouseOver" Value="True">
+                                                        <Setter TargetName="cg"  Property="Background" 
+                                                                                 Value="LightBlue"></Setter>
+                                                        <Setter TargetName="cg"  Property="TextElement.Foreground" 
+                                                                                 Value="White"></Setter>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
+                        <!--- -->
 
                         <Button Content=" Select... " 
                                     Grid.Row="0" Grid.Column="1"                             
@@ -60,7 +102,7 @@
                                     Click="BTAnalyze"
                                     Margin="0,5,0,5"
                                     Padding="5,0,5,0">Analyze it</Button>
-                            
+
                             <Label DockPanel.Dock="Right" Name="LBStyleInfo"></Label>
                             <!-- fill space -->
                             <Label></Label>
@@ -109,51 +151,63 @@
                 </DockPanel>
             </TabItem>
             <TabItem Header="Settings">
-                <Grid Background="#FFE5E5E5">
-                    <StackPanel Grid.Row="0" Grid.Column="0">
-                        <StackPanel.Resources>
-                            <Style TargetType="CheckBox">
-                                <Setter Property="Margin" Value="10,5,0,0"/>
-                            </Style>
-                            <Style TargetType="Separator">
-                                <Setter Property="Margin" Value="5,10,5,0"/>
-                            </Style>
-                        </StackPanel.Resources>
+                <StackPanel Grid.Row="0" Grid.Column="0" Background="#FFE5E5E5">
+                    <StackPanel.Resources>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="Margin" Value="10,5,0,0"/>
+                        </Style>
+                        <Style TargetType="Separator">
+                            <Setter Property="Margin" Value="5,10,5,0"/>
+                        </Style>
+                    </StackPanel.Resources>
 
-                        <StackPanel Orientation="Vertical" Margin="5,5,5,0">
-                            <Label Content="xtensa-lx106-elf-addr2line:"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <ComboBox Name="tbaddr2line" HorizontalAlignment="Stretch" 
+                    <StackPanel Orientation="Vertical" Margin="5,5,5,0">
+                        <Label Content="xtensa-lx106-elf-addr2line:"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ComboBox Name="tbaddr2line" HorizontalAlignment="Stretch" 
                                           IsEditable="True"
                                          Grid.Row="0" Grid.Column="0" Margin="10,0,4,0"/>
 
-                                <Button Content=" Select... " 
+                            <Button Content=" Select... " 
                                     Grid.Row="0" Grid.Column="1"                             
                                     HorizontalAlignment="Right"
                                     Click="BTSelectExecutable"
                                     Margin="4,2,4,0" />
 
-                                <Button Content=" Find... " 
-                                    Grid.Row="0" Grid.Column="2"                             
+                            <Button Content=" Find... " 
+                                    Grid.Row="0" Grid.Column="2"
                                     HorizontalAlignment="Right"
                                     Click="BTFindExecutable"
                                     Margin="4,2,4,0" />
-                            </Grid>
-                        </StackPanel>
-
-                        <Separator/>
-
-                        <Label Content="huge empty space"/>
+                        </Grid>
                     </StackPanel>
-                </Grid>
+
+                    <Separator/>
+
+                    <StackPanel Orientation="Vertical" Margin="5,5,5,0">
+                        <Label Padding="0,0,0,0" Content="Search Space for ELF Files"/>
+                        <CheckBox Name="CBsearchpathSketch" IsChecked="True">Search in SKETCH folder as defined in IDE</CheckBox>
+                        <Label Margin="20,0,0,0" Padding="0,0,0,0">
+                            (Use Sketch->Export compiled Binary or ALT+CTRL+S in IDE to create ELF file)
+                        </Label>
+                        <CheckBox Name="CBsearchpathTEMP" IsChecked="True">Search in Windows %Temp% folder</CheckBox>
+                        <Label Margin="20,0,0,0" Padding="0,0,0,0">
+                            (This can result in a lot of stuff. You might want to clear your %TEMP% folder.)
+                        </Label>
+                    </StackPanel>
+
+                    <Separator/>
+
+                    <Label Content="huge empty space"/>
+                </StackPanel>
             </TabItem>
 
         </TabControl>

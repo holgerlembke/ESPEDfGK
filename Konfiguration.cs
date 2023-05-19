@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 using System.IO;
 
 namespace ESPEDfGK
@@ -42,6 +43,13 @@ namespace ESPEDfGK
         public string ElfFile { get; set; }
 
         public double SplitHeight { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ElfFileSearchSpaceSketch { get; set; }
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ElfFileSearchSpaceTEMP { get; set; }
 
         //*****************************************************************************************
         //*****************************************************************************************

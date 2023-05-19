@@ -1,14 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESPEDfGK
 {
-    class SetupHelper
+    //*****************************************************************************************
+    internal class FileListGetter
     {
+        //*****************************************************************************************
+        public string[] filelist(string path, string pattern)
+        {
+            return Directory.GetFiles(path, pattern, SearchOption.AllDirectories);
+        }
+
+        //*****************************************************************************************
+        public string[] filelistNewAtTop(string[] fl)
+        {
+            if (fl.Length > 1) // eine einfache suche, erstes element austauschen
+            {
+                int i = 0;
+                DateTime md = File.GetLastWriteTime(fl[0]);
+
+                for (int j = 1; j < fl.Length; j++)
+                {
+                    DateTime nmd = File.GetLastWriteTime(fl[j]);
+                    if (nmd > md)
+                    {
+                        i = j;
+                        md = nmd;
+                    }
+                }
+
+                if (i > 0)
+                {
+                    string s = fl[0];
+                    fl[0] = fl[i];
+                    fl[i] = s;
+                }
+            }
+
+            return fl;
+        }
+    }
+
+    //*****************************************************************************************
+    internal class SetupHelper
+    {
+        //*****************************************************************************************
         public string[] findAddr2LineExe()
         {
             string p = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)+ 
@@ -16,6 +53,6 @@ namespace ESPEDfGK
 
             FileListGetter flg = new();
 
-            return flg.filelist(p, StringContent.xtensaaddr2line,false);        }
+            return flg.filelist(p, StringContent.xtensaaddr2line);        }
     }
 }

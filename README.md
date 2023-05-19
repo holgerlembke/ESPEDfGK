@@ -18,6 +18,10 @@ This is a work in progress thing. I do enhancements, fixes and debugging as I ne
 * Unzip at a convenient place.
 * Use.
 
+# Usage hint
+
+* Ctrl+Scrollwheel to control UI sizing
+
 # Dependancies
 
 * at least .NET 6.0 is needed

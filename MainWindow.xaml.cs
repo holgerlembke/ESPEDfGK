@@ -36,6 +36,9 @@ namespace ESPEDfGK
             HCLBR = new HighlightCurrentLineBackgroundRenderer(TBSourceCodeFilecontent);
             TBSourceCodeFilecontent.TextArea.TextView.BackgroundRenderers.Add(HCLBR);
 
+            CBsearchpathSketch.IsChecked = konfiguration.ElfFileSearchSpaceSketch == true;
+            CBsearchpathTEMP.IsChecked = konfiguration.ElfFileSearchSpaceTEMP == true;
+
             tbaddr2line.Text = konfiguration.Addr2LineExe;
             TBStackdump.Text = konfiguration.Stackdump;
             TBElffile.Text = konfiguration.ElfFile;
@@ -55,6 +58,9 @@ namespace ESPEDfGK
             konfiguration.Stackdump = TBStackdump.Text;
             konfiguration.ElfFile = TBElffile.Text;
             konfiguration.SplitHeight = TBStackdump.Height;
+
+            konfiguration.ElfFileSearchSpaceSketch = CBsearchpathSketch.IsChecked==true;
+            konfiguration.ElfFileSearchSpaceTEMP = CBsearchpathTEMP.IsChecked == true;
 
             hlpr.SpeichereEinstellungen(konfiguration);
         }
@@ -88,9 +94,11 @@ namespace ESPEDfGK
         //*****************************************************************************************
         private void BTFindElffile(object sender, RoutedEventArgs e)
         {
-            ArduinoWorld aw = new ArduinoWorld();
-            TBElffile.ItemsSource = aw.FindElfFile();
+            ElfListGetter getter = new();
+            TBElffile.DataContext = getter.GetFileList(
+                CBsearchpathSketch.IsChecked == true,CBsearchpathTEMP.IsChecked == true);
             TBElffile.SelectedIndex = 0;
+            TBElffile.IsDropDownOpen = true;
         }
 
         //*****************************************************************************************
@@ -114,7 +122,7 @@ namespace ESPEDfGK
             TraceItem item = ((ListViewItem)sender).Content as TraceItem;
 
             string scf = item.SourcecodeFile;
-            scf=scf.Replace("/","\\");
+            scf = scf.Replace("/", "\\");
 
             if (File.Exists(scf))
             {
