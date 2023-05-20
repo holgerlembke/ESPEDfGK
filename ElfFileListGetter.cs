@@ -80,7 +80,7 @@ downloads: c:\Users\holger2\AppData\Local\Arduino15\staging
 
             foreach (string p in pl)
             {
-                    string[] files = Directory.GetFiles(p, "*.elf", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(p, StringContent.elffilepattern, SearchOption.AllDirectories);
 
                     foreach (string f in files)
                     {
@@ -105,7 +105,7 @@ downloads: c:\Users\holger2\AppData\Local\Arduino15\staging
                     }
                 }
                 res.Insert(0, res[i]);
-                res.RemoveAt(i);
+                res.RemoveAt(i+1);
             }
 
             return res;

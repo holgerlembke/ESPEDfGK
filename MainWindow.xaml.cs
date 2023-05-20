@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using static System.Net.Mime.MediaTypeNames;
 using System.IO;
 using ICSharpCode.AvalonEdit;
+using System.Linq.Expressions;
 
 namespace ESPEDfGK
 {
@@ -80,6 +81,7 @@ namespace ESPEDfGK
             SetupHelper sh = new SetupHelper();
             tbaddr2line.ItemsSource = sh.findAddr2LineExe();
             tbaddr2line.SelectedIndex = 0;
+            tbaddr2line.IsDropDownOpen = true;
         }
 
         //*****************************************************************************************
@@ -104,33 +106,61 @@ namespace ESPEDfGK
         //*****************************************************************************************
         private void BTAnalyze(object sender, RoutedEventArgs e)
         {
-            Addr2LineDecider decider = new();
-            Addr2LineBase analyzer = decider.Decide(TBStackdump.Text);
+            if (File.Exists(tbaddr2line.Text))
+            {
+                Addr2LineDecider decider = new();
+                Addr2LineBase analyzer = decider.Decide(TBStackdump.Text);
 
-            LBStyleInfo.Content = "Dump intepreted as: " + analyzer.AnalyserType();
+                LBStyleInfo.Content = "CPU is: " + analyzer.AnalyserType();
 
-            analyzer.Execute(tbaddr2line.Text, TBElffile.Text, TBStackdump.Text);
+                analyzer.Execute(tbaddr2line.Text, TBElffile.Text, TBStackdump.Text);
 
-            LBExceptionList.ItemsSource = null;
-            LBExceptionList.Items.Clear(); // der xaml-code könnnte daten liefern....
-            LBExceptionList.ItemsSource = analyzer.DataList;
+                LBExceptionList.ItemsSource = null;
+                LBExceptionList.Items.Clear(); // der xaml-code könnnte daten liefern....
+                LBExceptionList.ItemsSource = analyzer.DataList;
+
+                // Wenn nix rauskommt, dann das Ausführungsergebnis annzeigen
+                if (analyzer.DataList.Count == 0)
+                {
+                    TBSourceCodeFilecontent.Text = analyzer.addr2lineoutputresult;
+                }
+                else
+                {
+                    TBSourceCodeFilecontent.Text = "";
+                }
+            } 
+            else
+            {
+                LBStyleInfo.Content = "Settings: addr2line is invalid.";
+            }
         }
 
         //*****************************************************************************************
         private void SenderDoppelClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            TraceItem item = ((ListViewItem)sender).Content as TraceItem;
+            TraceItem? item = ((ListViewItem)sender).Content as TraceItem;
 
-            string scf = item.SourcecodeFile;
-            scf = scf.Replace("/", "\\");
-
-            if (File.Exists(scf))
+            if (item != null)
             {
-                int linenr = int.Parse(item.SourcecodeLine);
+                string scf = item.SourcecodeFile;
+                scf = scf.Replace("/", "\\");
 
-                HCLBR.LineNumber = linenr;
-                TBSourceCodeFilecontent.Text = File.ReadAllText(scf);
-                TBSourceCodeFilecontent.ScrollTo(linenr, 0);
+                if (File.Exists(scf))
+                {
+                    int linenr = int.Parse(item.SourcecodeLine);
+
+                    HCLBR.LineNumber = linenr;
+
+                    try
+                    {
+                        TBSourceCodeFilecontent.Text = File.ReadAllText(scf);
+                        TBSourceCodeFilecontent.ScrollTo(linenr, 0);
+                    }
+                    catch
+                    {
+                        TBSourceCodeFilecontent.Text = "Can not access file.";
+                    }
+                }
             }
         }
     }

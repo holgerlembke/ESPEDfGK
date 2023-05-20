@@ -1,16 +1,11 @@
-﻿using Microsoft.VisualBasic;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows.Automation;
-using System.Windows.Documents;
 
 namespace ESPEDfGK
 {
-    public static class ExceptionStringList
+    internal static class ExceptionStringList
     {
         // https://links2004.github.io/Arduino/dc/deb/md_esp8266_doc_exception_causes.html
         public static readonly string[] list =
@@ -50,7 +45,7 @@ namespace ESPEDfGK
 
     //*****************************************************************************************
     //*****************************************************************************************
-    class TraceItem : INotifyPropertyChanged
+    internal class TraceItem : INotifyPropertyChanged
     {
         public string Addr { get; set; }
         public string Name { get; set; }
@@ -62,7 +57,7 @@ namespace ESPEDfGK
 
     //*****************************************************************************************
     //*****************************************************************************************
-    abstract class Addr2LineBase
+    internal abstract class Addr2LineBase
     {
         public ObservableCollection<TraceItem> DataList = new();
         protected Hashtable registers = new();
@@ -153,7 +148,7 @@ namespace ESPEDfGK
 
     //*****************************************************************************************
     //*****************************************************************************************
-    class Addr2LineEsp32 : Addr2LineBase
+    internal class Addr2LineEsp32 : Addr2LineBase
     {
         public override string AnalyserType()
         {
@@ -254,7 +249,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
 
     //*****************************************************************************************
     //*****************************************************************************************
-    class Addr2LineEsp8266 : Addr2LineBase
+    internal class Addr2LineEsp8266 : Addr2LineBase
     {
         private const string postfix = ":0xdead"; // not really needed, but...
 
@@ -363,7 +358,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
 
     //*****************************************************************************************
     // esp32 or esp8288 stack dumpp?
-    class Addr2LineDecider
+    internal class Addr2LineDecider
     {
         //*****************************************************************************************
         public Addr2LineBase Decide(string exceptiondump)

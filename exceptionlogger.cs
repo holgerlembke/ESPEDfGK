@@ -10,7 +10,7 @@ using System.Threading;
 namespace ESPEDfGK
 {
     // // https://asiablog.acumatica.com/2015/09/log-specific-exceptions-with-first.html
-    class ExceptionLogger
+    internal class ExceptionLogger
     {
         private string filename;
         private const uint HRFileLocked = 0x80070020;

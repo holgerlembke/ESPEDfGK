@@ -16,7 +16,7 @@ namespace ESPEDfGK
     //*****************************************************************************************
     public static class StringContent
     {
-        public const string ArbeitsOrdner = "esp32exceptiondecoder";
+        public const string ArbeitsOrdner = "EspExceptionDecoder";
         public const string KonfigFilename = "config.json";
         public const string LoggerDateiname = @"log %1.txt";
         public const string arduino15 = @"Arduino15\packages\";
@@ -26,6 +26,7 @@ namespace ESPEDfGK
 
         public const string xtensaaddr2line = @"xtensa-*-addr2line.exe";
         public const string xtensaaddr2lineparam = @"-pfiaCr -e ""%1"" %2";
+        public const string elffilepattern = @"*.elf";
     }
 
     //*****************************************************************************************

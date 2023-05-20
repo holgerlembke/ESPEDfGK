@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace ESPEDfGK
 {
-    public class HighlightCurrentLineBackgroundRenderer : IBackgroundRenderer
+    internal class HighlightCurrentLineBackgroundRenderer : IBackgroundRenderer
     {
         private TextEditor _editor;
         public int LineNumber;
