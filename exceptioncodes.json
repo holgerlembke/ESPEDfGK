@@ -1,0 +1,173 @@
+[
+  {
+    "Start": 0,
+    "Name": "IllegalInstructionCause",
+    "Description": "Illegal instruction",
+    "RequiredOption": "Exception"
+  },
+  {
+    "Start": 1,
+    "Name": "SyscallCause",
+    "Description": "SYSCALL instruction",
+    "RequiredOption": "Exception"
+  },
+  {
+    "Start": 2,
+    "Name": "InstructionFetchErrorCause",
+    "Description": "Processor internal physical address or data error during instruction fetch",
+    "RequiredOption": "Exception"
+  },
+  {
+    "Start": 3,
+    "Name": "LoadStoreErrorCause",
+    "Description": "Processor internal physical address or data error during load or store",
+    "RequiredOption": "Exception"
+  },
+  {
+    "Start": 4,
+    "Name": "Level1InterruptCause",
+    "Description": "Level-1 interrupt as indicated by set level-1 bits in the INTERRUPT register",
+    "RequiredOption": "Interrupt"
+  },
+  {
+    "Start": 5,
+    "Name": "AllocaCause",
+    "Description": "MOVSP instruction, if caller?s registers are not in the register file",
+    "RequiredOption": "Windowed Register"
+  },
+  {
+    "Start": 6,
+    "Name": "IntegerDivideByZeroCause",
+    "Description": "QUOS, QUOU, REMS, or REMU divisor operand is zero",
+    "RequiredOption": "32-bit Integer Divide"
+  },
+  {
+    "Start": 7,
+    "Name": "Reserved for Tensilica"
+  },
+  {
+    "Start": 8,
+    "Name": "PrivilegedCause",
+    "Description": "Attempt to execute a privileged operation when CRING ? 0",
+    "RequiredOption": "MMU"
+  },
+  {
+    "Start": 9,
+    "Name": "LoadStoreAlignmentCause",
+    "Description": "Load or store to an unaligned address",
+    "RequiredOption": "Unaligned Exception"
+  },
+  {
+    "Start": 10,
+    "Ende" : 11,
+    "Name": "Reserved for Tensilica"
+  },
+  {
+    "Start": 12,
+    "Name": "InstrPIFDataErrorCause",
+    "Description": "PIF data error during instruction fetch",
+    "RequiredOption": "Processor Interface"
+  },
+  {
+    "Start": 13,
+    "Name": "LoadStorePIFDataErrorCause",
+    "Description": "Synchronous PIF data error during LoadStore access",
+    "RequiredOption": "Processor Interface"
+  },
+  {
+    "Start": 14,
+    "Name": "InstrPIFAddrErrorCause",
+    "Description": "PIF address error during instruction fetch",
+    "RequiredOption": "Processor Interface"
+  },
+  {
+    "Start": 15,
+    "Name": "LoadStorePIFAddrErrorCause",
+    "Description": "Synchronous PIF address error during LoadStore access",
+    "RequiredOption": "Processor Interface"
+  },
+  {
+    "Start": 16,
+    "Name": "InstTLBMissCause",
+    "Description": "Error during Instruction TLB refill",
+    "RequiredOption": "MMU"
+  },
+  {
+    "Start": 17,
+    "Name": "InstTLBMultiHitCause",
+    "Description": "Multiple instruction TLB entries matched",
+    "RequiredOption": "MMU"
+  },
+  {
+    "Start": 18,
+    "Name": "InstFetchPrivilegeCause",
+    "Description": "An instruction fetch referenced a virtual address at a ring level less than CRING",
+    "RequiredOption": "MMU"
+  },
+  {
+    "Start": 19,
+    "Name": "Reserved for Tensilica"
+  },
+  {
+    "Start": 20,
+    "Name": "InstFetchProhibitedCause",
+    "Description": "An instruction fetch referenced a page mapped with an attribute that does not permit instruction fetch",
+    "RequiredOption": "Region Protection or MMU"
+  },
+  {
+    "Start": 21,
+    "Ende" : 23,
+    "Name": "Reserved for Tensilica"
+  },
+  {
+    "Start": 24,
+    "Name": "LoadStoreTLBMissCause",
+    "Description": "Error during TLB refill for a load or store",
+    "RequiredOption": "MMU"
+  },
+  {
+    "Start": 25,
+    "Name": "LoadStoreTLBMultiHitCause",
+    "Description": "Multiple TLB entries matched for a load or store",
+    "RequiredOption": "MMU"
+  },
+  {
+    "Start": 26,
+    "Name": "LoadStorePrivilegeCause",
+    "Description": "A load or store referenced a virtual address at a ring level less than CRING",
+    "RequiredOption": "MMU"
+  },
+  {
+    "Start": 27,
+    "Name": "Reserved for Tensilica"
+  },
+  {
+    "Start": 28,
+    "Name": "LoadProhibitedCause",
+    "Description": "A load referenced a page mapped with an attribute that does not permit loads",
+    "RequiredOption": "Region Protection or MMU"
+  },
+  {
+    "Start": 29,
+    "Name": "StoreProhibitedCause",
+    "Description": "A store referenced a page mapped with an attribute that does not permit stores",
+    "RequiredOption": "Region Protection or MMU"
+  },
+  {
+    "Start": 30,
+    "Ende" : 31,
+    "Name": "Reserved for Tensilica"
+  },
+  {
+    "Start": 32,
+    "Ende" : 39,
+    "Name": "CoprocessornDisabled",
+    "Description": "Coprocessor n instruction when cpn disabled. n varies 0..7 as the cause varies 32..39",
+    "RequiredOption": "Coprocessor"
+  },
+  {
+    "Start": 40,
+    "Ende" : 63,
+    "Name": "Reserved"
+  }
+]

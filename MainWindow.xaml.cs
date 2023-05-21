@@ -60,7 +60,7 @@ namespace ESPEDfGK
             konfiguration.ElfFile = TBElffile.Text;
             konfiguration.SplitHeight = TBStackdump.Height;
 
-            konfiguration.ElfFileSearchSpaceSketch = CBsearchpathSketch.IsChecked==true;
+            konfiguration.ElfFileSearchSpaceSketch = CBsearchpathSketch.IsChecked == true;
             konfiguration.ElfFileSearchSpaceTEMP = CBsearchpathTEMP.IsChecked == true;
 
             hlpr.SpeichereEinstellungen(konfiguration);
@@ -98,7 +98,7 @@ namespace ESPEDfGK
         {
             ElfListGetter getter = new();
             TBElffile.DataContext = getter.GetFileList(
-                CBsearchpathSketch.IsChecked == true,CBsearchpathTEMP.IsChecked == true);
+                CBsearchpathSketch.IsChecked == true, CBsearchpathTEMP.IsChecked == true);
             TBElffile.SelectedIndex = 0;
             TBElffile.IsDropDownOpen = true;
         }
@@ -119,6 +119,16 @@ namespace ESPEDfGK
                 LBExceptionList.Items.Clear(); // der xaml-code könnnte daten liefern....
                 LBExceptionList.ItemsSource = analyzer.DataList;
 
+                // Exception Ursache
+                if (analyzer.exceptioncause != null)
+                {
+                    LBExceptionInfo.Content = "EC: " + analyzer.exceptioncause.Description;
+                }
+                else
+                {
+                    LBExceptionInfo.Content = "";
+                }
+
                 // Wenn nix rauskommt, dann das Ausführungsergebnis annzeigen
                 if (analyzer.DataList.Count == 0)
                 {
@@ -128,7 +138,7 @@ namespace ESPEDfGK
                 {
                     TBSourceCodeFilecontent.Text = "";
                 }
-            } 
+            }
             else
             {
                 LBStyleInfo.Content = "Settings: addr2line is invalid.";

@@ -1,46 +1,97 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Security.Principal;
 
 namespace ESPEDfGK
 {
-    internal static class ExceptionStringList
+    // xtensa Instruction Set Architecture (ISA) Reference Manual.pdf
+    // from 4.4.1.5 The Exception Cause Register (EXCCAUSE) under the Exception Option
+    //*****************************************************************************************
+    internal class ExceptionCausesEXCCAUSEitem
     {
-        // https://links2004.github.io/Arduino/dc/deb/md_esp8266_doc_exception_causes.html
-        public static readonly string[] list =
+        public int Start { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string RequiredOption { get; set; }
+        public int Ende { get; set; }
+    }
+
+    //*****************************************************************************************
+    internal class ExceptionCausesEXCCAUSE
+    {
+        public ExceptionCausesEXCCAUSEitem[]? exceptions { get; set; }
+
+        //*****************************************************************************************
+        public ExceptionCausesEXCCAUSE()
         {
-            @"Illegal instruction",
-            @"SYSCALL instruction",
-            @"InstructionFetchError: Processor internal physical address or data error during instruction fetch",
-            @"LoadStoreError: Processor internal physical address or data error during load or store",
-            @"Level1Interrupt: Level-1 interrupt as indicated by set level-1 bits in the INTERRUPT register",
-            @"Alloca: MOVSP instruction, if caller's registers are not in the register file",
-            @"IntegerDivideByZero: QUOS, QUOU, REMS, or REMU divisor operand is zero",
-            @"reserved",
-            @"Privileged: Attempt to execute a privileged operation when CRING ? 0",
-            @"LoadStoreAlignmentCause: Load or store to an unaligned address",
-            @"reserved",
-            @"reserved",
-            @"InstrPIFDataError: PIF data error during instruction fetch",
-            @"LoadStorePIFDataError: Synchronous PIF data error during LoadStore access",
-            @"InstrPIFAddrError: PIF address error during instruction fetch",
-            @"LoadStorePIFAddrError: Synchronous PIF address error during LoadStore access",
-            @"InstTLBMiss: Error during Instruction TLB refill",
-            @"InstTLBMultiHit: Multiple instruction TLB entries matched",
-            @"InstFetchPrivilege: An instruction fetch referenced a virtual address at a ring level less than CRING",
-            @"reserved",
-            @"InstFetchProhibited: An instruction fetch referenced a page mapped with an attribute that does not permit instruction fetch",
-            @"reserved",
-            @"reserved",
-            @"reserved",
-            @"LoadStoreTLBMiss: Error during TLB refill for a load or store",
-            @"LoadStoreTLBMultiHit: Multiple TLB entries matched for a load or store",
-            @"LoadStorePrivilege: A load or store referenced a virtual address at a ring level less than CRING",
-            @"reserved",
-            @"LoadProhibited: A load referenced a page mapped with an attribute that does not permit loads",
-            @"StoreProhibited: A store referenced a page mapped with an attribute that does not permit stores"
-        };
+            string rn = @"ESPEDfGK.exceptioncodes.json";
+
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            using (Stream? stream = assembly.GetManifestResourceStream(rn))
+            {
+                if (stream != null)
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        string s = reader.ReadToEnd();
+
+                        exceptions = JsonConvert.DeserializeObject<ExceptionCausesEXCCAUSEitem[]>(s);
+                    }
+                }
+            }
+        }
+
+        //*****************************************************************************************
+        public ExceptionCausesEXCCAUSEitem? findExceptionCause(int id)
+        {
+            foreach (ExceptionCausesEXCCAUSEitem item in exceptions)
+            {
+                if ((item.Start == id) ||
+                     ((item.Start >= id) && (item.Ende <= id)))
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+        //*****************************************************************************************
+        public ExceptionCausesEXCCAUSEitem? findExceptionCause(string id)
+        {
+            int hexcode = id.IndexOf("x");
+            if (hexcode > -1)
+            {
+                id = id.Remove(0, hexcode+1);
+                if (int.TryParse(id, NumberStyles.HexNumber, null, out int idr))
+                {
+                    return findExceptionCause(idr);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                if (int.TryParse(id, out int idr))
+                {
+                    return findExceptionCause(idr);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
     }
 
     //*****************************************************************************************
@@ -64,7 +115,8 @@ namespace ESPEDfGK
         public abstract void Execute(string addr2lineexe, string elffilename, string exceptiondump);
         public abstract string AnalyserType();
 
-        public string addr2lineoutputresult;
+        public string? addr2lineoutputresult = null;
+        public ExceptionCausesEXCCAUSEitem? exceptioncause = null;
 
         //*****************************************************************************************
         protected string subexec(string addr2lineexe, string elffilename, string addrlist)
@@ -238,6 +290,10 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
 
             buildregistercollection(exceptiondump);
 
+            // Wirklich?
+            ExceptionCausesEXCCAUSE ec = new();
+            exceptioncause = ec.findExceptionCause((string)registers["EXCCAUSE"]);
+
             string bt = findBacktrace(exceptiondump);
             if (bt != "")
             {
@@ -340,11 +396,39 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
         }
 
         //*****************************************************************************************
+        private void findexceptioncause(string exceptiondump)
+        {
+            /*
+            Exception (9):
+            epc1=0x402041b3 epc2=0x00000000 epc3=0x00000000 excvaddr=0x0000002a depc=0x00000000
+             */
+            int i = exceptiondump.IndexOf("Exception (");
+
+            if (i > -1)
+            {
+                exceptiondump = exceptiondump.Remove(0, i + 11);
+                i = exceptiondump.IndexOf(")");
+                if (i > -1)
+                {
+                    exceptiondump = exceptiondump.Remove(i);
+
+                    int exid;
+                    if (int.TryParse(exceptiondump, out exid))
+                    {
+                        ExceptionCausesEXCCAUSE ec = new();
+                        exceptioncause = ec.findExceptionCause(exid);
+                    }
+                }
+            }
+        }
+
+        //*****************************************************************************************
         public override void Execute(string addr2lineexe, string elffilename, string exceptiondump)
         {
             DataList.Clear();
 
             buildregistercollection(exceptiondump);
+            findexceptioncause(exceptiondump);
 
             string bt = findBacktrace(exceptiondump);
 

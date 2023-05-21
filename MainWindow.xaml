@@ -113,6 +113,8 @@
                      <Label></Label>
                   </DockPanel>
                </Grid>
+               <Label Name="LBExceptionInfo" DockPanel.Dock="Top" Margin="10,0,0,0" Padding="0" />
+
                <ListView DockPanel.Dock="Top" x:Name="LBExceptionList"
                              Margin="10,0,3,0">
                   <ListView.ItemContainerStyle>

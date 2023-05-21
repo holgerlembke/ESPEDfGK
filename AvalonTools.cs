@@ -5,21 +5,25 @@ using System.Windows;
 
 namespace ESPEDfGK
 {
+    //*****************************************************************************************
     internal class HighlightCurrentLineBackgroundRenderer : IBackgroundRenderer
     {
         private TextEditor _editor;
         public int LineNumber;
 
+        //*****************************************************************************************
         public HighlightCurrentLineBackgroundRenderer(TextEditor editor)
         {
             _editor = editor;
         }
 
+        //*****************************************************************************************
         public KnownLayer Layer
         {
             get { return KnownLayer.Selection; }
         }
 
+        //*****************************************************************************************
         public void Draw(TextView textView, DrawingContext drawingContext)
         {
             if (_editor.Document == null)
@@ -27,7 +31,7 @@ namespace ESPEDfGK
 
             textView.EnsureVisualLines();
 
-            if (LineNumber > 0)
+            if ((LineNumber > 0) && (LineNumber<_editor.Document.Lines.Count))
             {
                 Brush highlight = Brushes.LightGreen; 
                 var currentLine = _editor.Document.GetLineByNumber(LineNumber);
