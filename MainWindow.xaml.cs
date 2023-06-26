@@ -109,7 +109,12 @@ namespace ESPEDfGK
             if (File.Exists(tbaddr2line.Text))
             {
                 Addr2LineDecider decider = new();
-                Addr2LineBase analyzer = decider.Decide(TBStackdump.Text);
+                Addr2LineBase? analyzer = decider.Decide(TBStackdump.Text);
+
+                if (analyzer == null)
+                {
+                    return;
+                }
 
                 LBStyleInfo.Content = "CPU is: " + analyzer.AnalyserType();
 

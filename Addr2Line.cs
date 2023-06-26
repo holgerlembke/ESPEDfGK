@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -290,15 +291,22 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
 
             buildregistercollection(exceptiondump);
 
-            // Wirklich?
-            ExceptionCausesEXCCAUSE ec = new();
-            exceptioncause = ec.findExceptionCause((string)registers["EXCCAUSE"]);
-
-            string bt = findBacktrace(exceptiondump);
-            if (bt != "")
+            if (registers.Count > 0)
             {
-                bt = registers["PC"] + ":" + registers["PC"] + " " + bt;
-                prozessadd2lineoutput(addr2lineexe, elffilename, bt);
+                // Wirklich?
+                ExceptionCausesEXCCAUSE ec = new();
+                string excause = (string)registers["EXCCAUSE"];
+                if (excause != null)
+                {
+                    exceptioncause = ec.findExceptionCause(excause);
+
+                    string bt = findBacktrace(exceptiondump);
+                    if (bt != "")
+                    {
+                        bt = registers["PC"] + ":" + registers["PC"] + " " + bt;
+                        prozessadd2lineoutput(addr2lineexe, elffilename, bt);
+                    }
+                }
             }
         }
     }
@@ -445,16 +453,17 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
     internal class Addr2LineDecider
     {
         //*****************************************************************************************
-        public Addr2LineBase Decide(string exceptiondump)
+        public Addr2LineBase? Decide(string exceptiondump)
         {
             if (exceptiondump.IndexOf(">stack>") > 0)
             {
                 return new Addr2LineEsp8266();
             }
             else
+            if (exceptiondump.IndexOf("register dump") > 0)
             {
                 return new Addr2LineEsp32();
-            }
+            } else
             return null; // nah. :-)
         }
     }

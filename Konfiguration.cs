@@ -1,7 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace ESPEDfGK
 {
@@ -21,12 +26,33 @@ namespace ESPEDfGK
         public const string LoggerDateiname = @"log %1.txt";
         public const string arduino15 = @"Arduino15\packages\";
 
+        public const string startmutex = "Global\\FB0B2193-43C8-4DC2-8CE3-51E9C4E97C24";
+
         public const string arduinoclisettings = @".arduinoIDE\arduino-cli.yaml";
         public const string backtrace = @"Backtrace: ";
 
         public const string xtensaaddr2line = @"xtensa-*-addr2line.exe";
         public const string xtensaaddr2lineparam = @"-pfiaCr -e ""%1"" %2";
         public const string elffilepattern = @"*.elf";
+        /*
+         Convert addresses into line number/file name pairs.
+         If no addresses are specified on the command line, they will be read from stdin
+         The options are:
+          @<file>                Read options from<file>
+          -a --addresses Show addresses
+          -b --target=< bfdname > Set the binary file format
+          -e --exe=< executable > Set the input file name (default is a.out)
+          -i --inlines Unwind inlined functions
+          -j --section=<name>    Read section-relative offsets instead of addresses
+          -p --pretty-print Make the output easier to read for humans
+          -s --basenames Strip directory names
+          -f --functions Show function names
+          -C --demangle[= style] Demangle function names
+          -R --recurse-limit Enable a limit on recursion whilst demangling.  [Default]
+          -r --no-recurse-limit Disable a limit on recursion whilst demangling
+          -h --help Display this information
+          -v --version Display the program's version
+        */
     }
 
     //*****************************************************************************************
