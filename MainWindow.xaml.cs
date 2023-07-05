@@ -7,6 +7,10 @@ using static System.Net.Mime.MediaTypeNames;
 using System.IO;
 using ICSharpCode.AvalonEdit;
 using System.Linq.Expressions;
+using System;
+using Microsoft.VisualBasic.ApplicationServices;
+using System.Windows.Threading;
+using System.Reflection;
 
 namespace ESPEDfGK
 {
@@ -22,6 +26,8 @@ namespace ESPEDfGK
         {
             InitializeComponent();
 
+            Title = Title + " " + Assembly.GetExecutingAssembly().GetName().Version;
+
             konfiguration = hlpr.LadeEinstellungen();
             new ExceptionLogger(konfiguration.LoggerDateiname());
 
@@ -36,6 +42,9 @@ namespace ESPEDfGK
             // Zeile visualisieren
             HCLBR = new HighlightCurrentLineBackgroundRenderer(TBSourceCodeFilecontent);
             TBSourceCodeFilecontent.TextArea.TextView.BackgroundRenderers.Add(HCLBR);
+
+            LBStyleInfo.Content = null;
+            LBExceptionInfo.Content = null;
 
             CBsearchpathSketch.IsChecked = konfiguration.ElfFileSearchSpaceSketch == true;
             CBsearchpathTEMP.IsChecked = konfiguration.ElfFileSearchSpaceTEMP == true;
@@ -120,6 +129,8 @@ namespace ESPEDfGK
 
                 analyzer.Execute(tbaddr2line.Text, TBElffile.Text, TBStackdump.Text);
 
+                BTnCopyToClipboard.IsEnabled = true;
+
                 LBExceptionList.ItemsSource = null;
                 LBExceptionList.Items.Clear(); // der xaml-code könnnte daten liefern....
                 LBExceptionList.ItemsSource = analyzer.DataList;
@@ -134,7 +145,7 @@ namespace ESPEDfGK
                     LBExceptionInfo.Content = "";
                 }
 
-                // Wenn nix rauskommt, dann das Ausführungsergebnis annzeigen
+                // Wenn nix rauskommt, dann das Ausführungsergebnis anzeigen
                 if (analyzer.DataList.Count == 0)
                 {
                     TBSourceCodeFilecontent.Text = analyzer.addr2lineoutputresult;
@@ -147,6 +158,7 @@ namespace ESPEDfGK
             else
             {
                 LBStyleInfo.Content = "Settings: addr2line is invalid.";
+                BTnCopyToClipboard.IsEnabled = true;
             }
         }
 
@@ -177,6 +189,38 @@ namespace ESPEDfGK
                     }
                 }
             }
+        }
+
+        //*****************************************************************************************
+        private void BTCopyToClipboard(object sender, RoutedEventArgs e)
+        {
+            string clpboardtext = (string)LBStyleInfo.Content +
+                                   Environment.NewLine +
+                                   LBExceptionInfo.Content +
+                                   Environment.NewLine + Environment.NewLine;
+
+            foreach (TraceItem ti in LBExceptionList.ItemsSource)
+            {
+                clpboardtext += ti.Addr+" "+
+                                ti.Name + " "+
+                                ti.SourcecodeFile + " "+
+                                ti.SourcecodeLine + " "+
+                                Environment.NewLine;
+            }
+            Clipboard.SetText(clpboardtext);
+
+            // Visuelle Rückkopplung der Aktion
+            BTnCopyToClipboard.Visibility= Visibility.Collapsed;
+            BTnCopyToClipboardDone.Visibility= Visibility.Visible;
+            DispatcherTimer timer = new();
+            timer.Interval = TimeSpan.FromSeconds(2);
+            timer.Tick += (s, a) =>
+            {
+                BTnCopyToClipboard.Visibility = Visibility.Visible;
+                BTnCopyToClipboardDone.Visibility = Visibility.Collapsed;
+                timer.Stop();
+            };
+            timer.Start();
         }
     }
 }

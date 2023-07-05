@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.ApplicationServices;
+using System;
 using System.IO;
+using System.Linq;
 
 namespace ESPEDfGK
 {
@@ -48,11 +50,21 @@ namespace ESPEDfGK
         //*****************************************************************************************
         public string[] findAddr2LineExe()
         {
-            string p = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)+ 
-                                Path.DirectorySeparatorChar+StringContent.arduino15;
+            string pArduino = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
+                                Path.DirectorySeparatorChar + StringContent.arduino15;
+            
+            string pPlatformIO = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + 
+                Path.DirectorySeparatorChar + StringContent.platformio;
 
             FileListGetter flg = new();
 
-            return flg.filelist(p, StringContent.xtensaaddr2line);        }
+            string[] res = flg.filelist(pArduino, StringContent.xtensaaddr2line);
+
+            string[] resPIO = flg.filelist(pPlatformIO, StringContent.xtensaaddr2line);
+
+            res = res.Union(resPIO).ToArray();  
+
+            return res;
+        }
     }
 }

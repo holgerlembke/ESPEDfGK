@@ -24,7 +24,10 @@ namespace ESPEDfGK
         public const string ArbeitsOrdner = "EspExceptionDecoder";
         public const string KonfigFilename = "config.json";
         public const string LoggerDateiname = @"log %1.txt";
+
+        // Orte, wo die xtensaaddr2line sein könnten
         public const string arduino15 = @"Arduino15\packages\";
+        public const string platformio = @".platformio\packages\";
 
         public const string startmutex = "Global\\FB0B2193-43C8-4DC2-8CE3-51E9C4E97C24";
 

@@ -449,7 +449,9 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
     }
 
     //*****************************************************************************************
-    // esp32 or esp8288 stack dumpp?
+    /// <summary>
+    /// Detects whether a esp32 or esp8266 stack dump. Null for none. 
+    /// </summary>
     internal class Addr2LineDecider
     {
         //*****************************************************************************************
@@ -463,8 +465,9 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
             if (exceptiondump.IndexOf("register dump") > 0)
             {
                 return new Addr2LineEsp32();
-            } else
-            return null; // nah. :-)
+            }
+            // nothing found
+            return null; 
         }
     }
 }

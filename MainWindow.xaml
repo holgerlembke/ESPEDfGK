@@ -101,19 +101,37 @@
                <dpsplit:DockPanelSplitter Name="DPSsplitter" DockPanel.Dock="Top"/>
                <Grid DockPanel.Dock="Top">
                   <DockPanel>
-                     <Label DockPanel.Dock="Left" Width="Auto">Stack Trace (Click to show source):</Label>
-
+                     <DockPanel>
+                        <Label DockPanel.Dock="Top" Width="Auto"
+                               Margin="10,0,0,0" Padding="0">Stack Trace (Click to show source):</Label>
+                        <Label DockPanel.Dock="Top" Name="LBStyleInfo"
+                               Margin="15,0,0,0" Padding="0">xxxxxvisxxxxxx</Label>
+                        <Label DockPanel.Dock="Top" Name="LBExceptionInfo" 
+                               Margin="15,0,0,0" Padding="0" >xxxxxvisxxxxxx</Label>
+                     </DockPanel>
+                     <Button DockPanel.Dock="Right" 
+                                    Name="BTnCopyToClipboardDone" 
+                                    IsEnabled="false"
+                                    Visibility="Collapsed"
+                                    Margin="0,5,3,5"
+                                    VerticalAlignment="Top"
+                                    Padding="5,0,5,0">Done</Button>
+                     <Button DockPanel.Dock="Right" 
+                                    Name="BTnCopyToClipboard" 
+                                    Click="BTCopyToClipboard"
+                                    IsEnabled="false"
+                                    Margin="0,5,3,5"
+                                    VerticalAlignment="Top"
+                                    Padding="5,0,5,0">Copy to clipboard</Button>
                      <Button DockPanel.Dock="Right" 
                                     Click="BTAnalyze"
-                                    Margin="0,5,0,5"
+                                    Margin="0,5,3,5"
+                                    VerticalAlignment="Top"
                                     Padding="5,0,5,0">Analyze it</Button>
-
-                     <Label DockPanel.Dock="Right" Name="LBStyleInfo"></Label>
                      <!-- fill space -->
                      <Label></Label>
                   </DockPanel>
                </Grid>
-               <Label Name="LBExceptionInfo" DockPanel.Dock="Top" Margin="10,0,0,0" Padding="0" />
 
                <ListView DockPanel.Dock="Top" x:Name="LBExceptionList"
                              Margin="10,0,3,0">
