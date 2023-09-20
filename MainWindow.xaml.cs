@@ -162,6 +162,17 @@ namespace ESPEDfGK
             }
         }
 
+        private int ParseLineNumber(string line)
+        {
+            int i=line.IndexOf(" (");
+            if (i >= 0)
+            {
+                line=line.Substring(0, i).Trim();
+            }
+
+            return int.Parse(line);
+        }
+
         //*****************************************************************************************
         private void SenderDoppelClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -174,7 +185,7 @@ namespace ESPEDfGK
 
                 if (File.Exists(scf))
                 {
-                    int linenr = int.Parse(item.SourcecodeLine);
+                    int linenr = ParseLineNumber(item.SourcecodeLine);
 
                     HCLBR.LineNumber = linenr;
 

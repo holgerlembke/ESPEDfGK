@@ -98,7 +98,7 @@
                <TextBox DockPanel.Dock="Top" Name="TBStackdump" TextWrapping="Wrap" AcceptsReturn="True" 
                                  Margin="10,0,3,0" Height="Auto">
                </TextBox>
-               <dpsplit:DockPanelSplitter Name="DPSsplitter" DockPanel.Dock="Top"/>
+               <dpsplit:DockPanelSplitter Name="DPSsplitter1" DockPanel.Dock="Top"/>
                <Grid DockPanel.Dock="Top">
                   <DockPanel>
                      <DockPanel>
@@ -167,11 +167,11 @@
                      </GridView>
                   </ListView.View>
                </ListView>
-               <Separator DockPanel.Dock="Top" Margin="10,2,3,2" />
+               <dpsplit:DockPanelSplitter Name="DPSsplitter2" DockPanel.Dock="Top"/>
                <avalonEdit:TextEditor DockPanel.Dock="Top" Margin="10,0,3,0" 
                                            ShowLineNumbers="True"
                                            SyntaxHighlighting="C++"
-                                           Name="TBSourceCodeFilecontent">
+                                           Name="TBSourceCodeFilecontent" Cursor="">
                </avalonEdit:TextEditor>
             </DockPanel>
          </TabItem>
