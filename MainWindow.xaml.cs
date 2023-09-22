@@ -122,6 +122,7 @@ namespace ESPEDfGK
 
                 if (analyzer == null)
                 {
+                    LBStyleInfo.Content = "unable to analyze.";
                     return;
                 }
 

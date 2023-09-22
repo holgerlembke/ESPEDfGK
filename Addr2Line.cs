@@ -299,14 +299,14 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
                 if (excause != null)
                 {
                     exceptioncause = ec.findExceptionCause(excause);
-
-                    string bt = findBacktrace(exceptiondump);
-                    if (bt != "")
-                    {
-                        bt = registers["PC"] + ":" + registers["PC"] + " " + bt;
-                        prozessadd2lineoutput(addr2lineexe, elffilename, bt);
-                    }
                 }
+            }
+            // Backtrace trotzdem, z. b. bei 
+            string bt = findBacktrace(exceptiondump);
+            if (bt != "")
+            {
+                bt = registers["PC"] + ":" + registers["PC"] + " " + bt;
+                prozessadd2lineoutput(addr2lineexe, elffilename, bt);
             }
         }
     }
@@ -466,6 +466,11 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
             {
                 return new Addr2LineEsp32();
             }
+            if (exceptiondump.IndexOf("CORRUPT HEAP: ")>0)
+            {
+                return new Addr2LineEsp32();
+            }
+
             // nothing found
             return null; 
         }
