@@ -170,6 +170,7 @@
                <dpsplit:DockPanelSplitter Name="DPSsplitter2" DockPanel.Dock="Top"/>
                <avalonEdit:TextEditor DockPanel.Dock="Top" Margin="10,0,3,0" 
                                            ShowLineNumbers="True"
+                                           MinHeight="50px"
                                            SyntaxHighlighting="C++"
                                            Name="TBSourceCodeFilecontent" Cursor="">
                </avalonEdit:TextEditor>

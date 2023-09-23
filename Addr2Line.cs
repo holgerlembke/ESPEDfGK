@@ -470,6 +470,15 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
             {
                 return new Addr2LineEsp32();
             }
+            if (exceptiondump.IndexOf("abort() was called") > 0)
+            {
+                return new Addr2LineEsp32();
+            }
+            // Fallback to last resort:
+            if (exceptiondump.IndexOf("Backtrace: ") > 0)
+            {
+                return new Addr2LineEsp32();
+            }
 
             // nothing found
             return null; 
