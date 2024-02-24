@@ -80,6 +80,8 @@ downloads: c:\Users\holger2\AppData\Local\Arduino15\staging
 
             foreach (string p in pl)
             {
+                try
+                {
                     string[] files = Directory.GetFiles(p, StringContent.elffilepattern, SearchOption.AllDirectories);
 
                     foreach (string f in files)
@@ -89,6 +91,11 @@ downloads: c:\Users\holger2\AppData\Local\Arduino15\staging
                         item.LastChange = File.GetLastWriteTime(f);
                         res.Add(item);
                     }
+                }
+                catch
+                {
+                    //;
+                }
             }
 
             if (res.Count > 1)

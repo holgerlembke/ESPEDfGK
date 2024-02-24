@@ -11,7 +11,14 @@ namespace ESPEDfGK
         //*****************************************************************************************
         public string[] filelist(string path, string pattern)
         {
-            return Directory.GetFiles(path, pattern, SearchOption.AllDirectories);
+            try
+            {
+                return Directory.GetFiles(path, pattern, SearchOption.AllDirectories);
+            }
+            catch
+            {
+                return new string[0];
+            }
         }
 
         //*****************************************************************************************
