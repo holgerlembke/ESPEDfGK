@@ -23,6 +23,7 @@
          <TabItem Header="Decoder">
             <DockPanel Grid.Row="0" Grid.Column="0" Background="#FFE5E5E5">
                <Label DockPanel.Dock="Top">Elf-File (in IDE use Sketch->Export compiled Binary or ALT+CTRL+S):</Label>
+               <Label Margin="5,0,0,0" Padding="0" DockPanel.Dock="Top">(Make sure to pick the matching addr2line on settings page!)</Label>
                <Grid DockPanel.Dock="Top">
                   <Grid.ColumnDefinitions>
                      <ColumnDefinition Width="*" />
@@ -174,6 +175,78 @@
                                            SyntaxHighlighting="C++"
                                            Name="TBSourceCodeFilecontent" Cursor="">
                </avalonEdit:TextEditor>
+            </DockPanel>
+         </TabItem>
+         <TabItem Header="Serial Monitor">
+            <DockPanel >
+               <Border DockPanel.Dock="Top" Margin="5">
+                  <StackPanel Orientation="Horizontal">
+                     <TextBlock Text="Port: " VerticalAlignment="Center"/>
+                     <ComboBox x:Name="cBoxComPort"  Margin="0,0,5,0"/>
+
+                     <TextBlock Text="Baudrate: " VerticalAlignment="Center"/>
+                     <ComboBox Name="cBoxBaudRate" SelectedIndex="2" Margin="0,0,5,0" >
+                        <ComboBoxItem>300</ComboBoxItem>
+                        <ComboBoxItem>600</ComboBoxItem>
+                        <ComboBoxItem>750</ComboBoxItem>
+                        <ComboBoxItem>1200</ComboBoxItem>
+                        <ComboBoxItem>2400</ComboBoxItem>
+                        <ComboBoxItem>4800</ComboBoxItem>
+                        <ComboBoxItem>9600</ComboBoxItem>
+                        <ComboBoxItem>19200</ComboBoxItem>
+                        <ComboBoxItem>31250</ComboBoxItem>
+                        <ComboBoxItem>38400</ComboBoxItem>
+                        <ComboBoxItem>57600</ComboBoxItem>
+                        <ComboBoxItem>74880</ComboBoxItem>
+                        <ComboBoxItem>115200</ComboBoxItem>
+                        <ComboBoxItem>230400</ComboBoxItem>
+                        <ComboBoxItem>250000</ComboBoxItem>
+                        <ComboBoxItem>460800</ComboBoxItem>
+                        <ComboBoxItem>500000</ComboBoxItem>
+                        <ComboBoxItem>921600</ComboBoxItem>
+                        <ComboBoxItem>1000000</ComboBoxItem>
+                     </ComboBox>
+
+                     <TextBlock Text="Databits: " VerticalAlignment="Center"/>
+                     <ComboBox Name="cBoxDataBits" SelectedIndex="2" Margin="0,0,5,0">
+                        <ComboBoxItem>6</ComboBoxItem>
+                        <ComboBoxItem>7</ComboBoxItem>
+                        <ComboBoxItem>8</ComboBoxItem>
+                     </ComboBox>
+
+                     <TextBlock Text="Parity: " VerticalAlignment="Center"/>
+                     <ComboBox Name="cBoxParityBits" SelectedIndex="0" Margin="0,0,5,0">
+                        <ComboBoxItem>N</ComboBoxItem>
+                        <ComboBoxItem>O</ComboBoxItem>
+                        <ComboBoxItem>E</ComboBoxItem>
+                     </ComboBox>
+
+                     <TextBlock Text="Stopbits: " VerticalAlignment="Center"/>
+                     <ComboBox Name="cBoxStopBits" SelectedIndex="0" Margin="0,0,5,0">
+                        <ComboBoxItem>1</ComboBoxItem>
+                        <ComboBoxItem>2</ComboBoxItem>
+                     </ComboBox>
+
+                     <Button Name="btnOpen" Content="Open" Padding="5,0,5,0" Click="BtnOpenSermonitor" />
+
+                     <Border Margin="5,0,5,0" Width="1" Background="Black" />
+
+                     <Button Name="btnClear" Content="Clear" Padding="5,0,5,0" Click="BtnClearSermonitor" />
+
+                     <Button Name="btnAnalyze" Content="→ Analysis" Margin="2,0,0,0" Padding="5,0,5,0" Click="BtnCopyToAnalyzer" />
+
+                  </StackPanel>
+               </Border>
+               <Grid DockPanel.Dock="Top" Background="LightBlue">
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <TextBox Margin="2,2,2,2" Background="White" Grid.Column="0" Grid.Row="0"/>
+               </Grid>
+               <TextBlock x:Name="tBoxInData" Margin="2,2,2,2" />
             </DockPanel>
          </TabItem>
          <TabItem Header="Settings">

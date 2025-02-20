@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Ports;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -80,6 +81,13 @@ namespace ESPEDfGK
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ElfFileSearchSpaceTEMP { get; set; }
+
+        // für den seriellen Port
+        public string PortName { get; set; }
+        public string PortSpeed { get; set; }
+        public string PortDatabits { get; set; }
+        public string PortStopbits { get; set; }
+        public string PortsParity { get; set; }
 
         //*****************************************************************************************
         //*****************************************************************************************

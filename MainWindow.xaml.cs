@@ -1,16 +1,11 @@
 ﻿using Microsoft.Win32;
-using System.Configuration;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
-using static System.Net.Mime.MediaTypeNames;
 using System.IO;
-using ICSharpCode.AvalonEdit;
-using System.Linq.Expressions;
 using System;
-using Microsoft.VisualBasic.ApplicationServices;
 using System.Windows.Threading;
 using System.Reflection;
+using System.IO.Ports;                // 8.0.0 installieren, 9.x produziert Fehler...
 
 namespace ESPEDfGK
 {
@@ -53,6 +48,18 @@ namespace ESPEDfGK
             TBStackdump.Text = konfiguration.Stackdump;
             TBElffile.Text = konfiguration.ElfFile;
             TBStackdump.Height = konfiguration.Ink(konfiguration.SplitHeight, TBStackdump.Height);
+
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
+            {
+                cBoxComPort.Items.Add(port);
+            }
+
+            cBoxComPort.Text = konfiguration.PortName;
+            cBoxBaudRate.Text = konfiguration.PortSpeed;
+            cBoxDataBits.Text = konfiguration.PortDatabits;
+            cBoxStopBits.Text = konfiguration.PortStopbits;
+            cBoxParityBits.Text = konfiguration.PortsParity;
         }
 
         //*****************************************************************************************
@@ -71,6 +78,12 @@ namespace ESPEDfGK
 
             konfiguration.ElfFileSearchSpaceSketch = CBsearchpathSketch.IsChecked == true;
             konfiguration.ElfFileSearchSpaceTEMP = CBsearchpathTEMP.IsChecked == true;
+
+            konfiguration.PortName = cBoxComPort.Text;
+            konfiguration.PortSpeed = cBoxBaudRate.Text;
+            konfiguration.PortDatabits = cBoxDataBits.Text;
+            konfiguration.PortStopbits = cBoxStopBits.Text;
+            konfiguration.PortsParity = cBoxParityBits.Text;
 
             hlpr.SpeichereEinstellungen(konfiguration);
         }
@@ -235,5 +248,6 @@ namespace ESPEDfGK
             };
             timer.Start();
         }
+
     }
 }
