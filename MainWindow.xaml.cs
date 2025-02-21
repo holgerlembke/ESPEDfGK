@@ -148,6 +148,7 @@ namespace ESPEDfGK
                 LBExceptionList.ItemsSource = null;
                 LBExceptionList.Items.Clear(); // der xaml-code könnnte daten liefern....
                 LBExceptionList.ItemsSource = analyzer.DataList;
+                LBExceptionList.Height = 200;
 
                 // Exception Ursache
                 if (analyzer.exceptioncause != null)

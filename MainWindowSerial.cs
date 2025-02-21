@@ -65,6 +65,12 @@ namespace ESPEDfGK
         //*****************************************************************************************
         private void DataWrited(string text)
         {
+            // Limit text
+            while (tBoxInData.Text.Length>50*1024)
+            {
+                tBoxInData.Text = tBoxInData.Text.Remove(0, 1024);
+            }
+
             tBoxInData.Text += text;
         }
         //*****************************************************************************************
@@ -72,9 +78,15 @@ namespace ESPEDfGK
         {
             tBoxInData.Text = "";
         }
+        //*****************************************************************************************
         private void BtnCopyToAnalyzer(object sender, RoutedEventArgs e)
         {
             TBStackdump.Text = tBoxInData.Text;
+        }
+        //*****************************************************************************************
+        private void BtnCopyToClipboard(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(tBoxInData.Text);
         }
     }
 }

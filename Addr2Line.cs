@@ -71,7 +71,7 @@ namespace ESPEDfGK
             int hexcode = id.IndexOf("x");
             if (hexcode > -1)
             {
-                id = id.Remove(0, hexcode+1);
+                id = id.Remove(0, hexcode + 1);
                 if (int.TryParse(id, NumberStyles.HexNumber, null, out int idr))
                 {
                     return findExceptionCause(idr);
@@ -142,6 +142,8 @@ namespace ESPEDfGK
             // Read the output stream first and then wait.
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
+
+            File.WriteAllText(@"j:\text.txt", output);
 
             addr2lineoutputresult = output;
             return output;
@@ -362,6 +364,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
                         {
                             if (start)
                             {
+                                /* das ist flasch
                                 string s = lines[j];
                                 if (s.EndsWith(" <"))
                                 {
@@ -370,6 +373,20 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
 
                                     stack = stack + " " + v[v.Length - 1] + postfix;
                                 }
+                                */
+                                string s = lines[j];
+
+                                if (s.IndexOf(":")>2)
+                                {
+                                    s = s.Remove(s.Length - 2);
+                                    string[] v = s.Split(" ");
+
+                                    if (v[v.Length - 1].StartsWith("4"))
+                                    {
+                                        stack = stack + " " + v[v.Length - 1] + postfix;
+                                    }
+                                }
+
                             }
                         }
                     }
@@ -466,7 +483,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
             {
                 return new Addr2LineEsp32();
             }
-            if (exceptiondump.IndexOf("CORRUPT HEAP: ")>0)
+            if (exceptiondump.IndexOf("CORRUPT HEAP: ") > 0)
             {
                 return new Addr2LineEsp32();
             }
@@ -481,7 +498,7 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/fatal-err
             }
 
             // nothing found
-            return null; 
+            return null;
         }
     }
 }
