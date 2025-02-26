@@ -26,29 +26,29 @@ namespace ESPEDfGK
         //*****************************************************************************************
         private void BtnOpenSermonitor(object sender, RoutedEventArgs e)
         {
-            if (serialPort.IsOpen)
+            try
             {
-                serialPort.Close();
-                btnOpen.Content = "Open";
+                serialPort.PortName = cBoxComPort.Text;
+                serialPort.BaudRate = Convert.ToInt32(cBoxBaudRate.Text);
+                serialPort.DataBits = Convert.ToInt32(cBoxDataBits.Text);
+                serialPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cBoxStopBits.Text);
+                serialPort.Parity = (Parity)Enum.Parse(typeof(ShortParity), cBoxParityBits.Text);
+                serialPort.Open(); // Open port.
+                serialPort.DataReceived += new SerialDataReceivedEventHandler(serialPort_DataRecieved);
+                btnOpen.Visibility = Visibility.Collapsed;
+                btnClose.Visibility = Visibility.Visible;
             }
-            else
+            catch (Exception err)
             {
-                try
-                {
-                    serialPort.PortName = cBoxComPort.Text;
-                    serialPort.BaudRate = Convert.ToInt32(cBoxBaudRate.Text);
-                    serialPort.DataBits = Convert.ToInt32(cBoxDataBits.Text);
-                    serialPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cBoxStopBits.Text);
-                    serialPort.Parity = (Parity)Enum.Parse(typeof(ShortParity), cBoxParityBits.Text);
-                    serialPort.Open(); // Open port.
-                    serialPort.DataReceived += new SerialDataReceivedEventHandler(serialPort_DataRecieved);
-                    btnOpen.Content = "Close";
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        //*****************************************************************************************
+        private void BtnCloseSermonitor(object sender, RoutedEventArgs e)
+        {
+            btnOpen.Visibility = Visibility.Visible;
+            btnClose.Visibility = Visibility.Collapsed;
+            serialPort.Close();
         }
 
         //*****************************************************************************************
@@ -66,7 +66,7 @@ namespace ESPEDfGK
         private void DataWrited(string text)
         {
             // Limit text
-            while (tBoxInData.Text.Length>50*1024)
+            while (tBoxInData.Text.Length > 50 * 1024)
             {
                 tBoxInData.Text = tBoxInData.Text.Remove(0, 1024);
             }

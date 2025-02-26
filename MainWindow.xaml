@@ -226,14 +226,11 @@
                         <ComboBoxItem>2</ComboBoxItem>
                      </ComboBox>
 
-                     <Button x:Name="btnOpen" Content="Open" Padding="5,0,5,0" Click="BtnOpenSermonitor" />
-
+                     <Button x:Name="btnOpen" Background="#80ff80" Content="Open" Padding="5,0,5,0" Click="BtnOpenSermonitor" />
+                     <Button x:Name="btnClose" Background="#ff8080" Visibility="Collapsed" Content="Close" Padding="5,0,5,0" Click="BtnCloseSermonitor" />
                      <Border Margin="5,0,5,0" Width="1" Background="Black" />
-
                      <Button Content="Clear" Padding="5,0,5,0" Click="BtnClearSermonitor" />
-
                      <Button Content="→ Analysis" Margin="2,0,0,0" Padding="5,0,5,0" Click="BtnCopyToAnalyzer" />
-
                      <Button Content="→ Clipboard" Margin="2,0,0,0" Padding="5,0,5,0" Click="BtnCopyToClipboard" />
                   </StackPanel>
                </Border>
