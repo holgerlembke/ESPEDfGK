@@ -143,7 +143,7 @@ namespace ESPEDfGK
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
-            File.WriteAllText(@"j:\text.txt", output);
+            // File.WriteAllText(@"j:\text.txt", output);
 
             addr2lineoutputresult = output;
             return output;
