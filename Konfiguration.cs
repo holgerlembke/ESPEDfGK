@@ -72,6 +72,7 @@ namespace ESPEDfGK
         public string Addr2LineExe { get; set; }
         public string Stackdump { get; set; }
         public string ElfFile { get; set; }
+        public int SendTextAdd { get; set; } = 1;
 
         public double SplitHeight { get; set; }
 

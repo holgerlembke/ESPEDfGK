@@ -5,7 +5,8 @@ using System.IO;
 using System;
 using System.Windows.Threading;
 using System.Reflection;
-using System.IO.Ports;                // 8.0.0 installieren, 9.x produziert Fehler...
+using System.IO.Ports;
+using System.Threading;                // 8.0.0 installieren, 9.x produziert Fehler...
 
 namespace ESPEDfGK
 {
@@ -15,6 +16,8 @@ namespace ESPEDfGK
         Konfiguration konfiguration = null;
         KonfigurationsHlpr hlpr = new();
         HighlightCurrentLineBackgroundRenderer HCLBR;
+
+        ExceptionFileMonitor exceptionfilemonitor = null;
 
         //*****************************************************************************************
         public MainWindow()
@@ -48,23 +51,36 @@ namespace ESPEDfGK
             TBStackdump.Text = konfiguration.Stackdump;
             TBElffile.Text = konfiguration.ElfFile;
             TBStackdump.Height = konfiguration.Ink(konfiguration.SplitHeight, TBStackdump.Height);
+            cBoxOutDataAdd.SelectedIndex = konfiguration.SendTextAdd;
 
-            string[] ports = SerialPort.GetPortNames();
-            foreach (string port in ports)
-            {
-                cBoxComPort.Items.Add(port);
-            }
+            RefreshPortList();
 
             cBoxComPort.Text = konfiguration.PortName;
             cBoxBaudRate.Text = konfiguration.PortSpeed;
             cBoxDataBits.Text = konfiguration.PortDatabits;
             cBoxStopBits.Text = konfiguration.PortStopbits;
             cBoxParityBits.Text = konfiguration.PortsParity;
+
+            oldcolor = BtCopyFromSerialMonitorFile.Background;
+
+            StartExceptionFileMonitor();
+        }
+
+        //*****************************************************************************************
+        private void RefreshPortList()
+        {
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
+            {
+                cBoxComPort.Items.Add(port);
+            }
         }
 
         //*****************************************************************************************
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            EndExceptionFileMonitor();
+
             konfiguration.Top = Top;
             konfiguration.Left = Left;
             konfiguration.Height = Height;
@@ -75,6 +91,7 @@ namespace ESPEDfGK
             konfiguration.Stackdump = TBStackdump.Text;
             konfiguration.ElfFile = TBElffile.Text;
             konfiguration.SplitHeight = TBStackdump.Height;
+            konfiguration.SendTextAdd = cBoxOutDataAdd.SelectedIndex;
 
             konfiguration.ElfFileSearchSpaceSketch = CBsearchpathSketch.IsChecked == true;
             konfiguration.ElfFileSearchSpaceTEMP = CBsearchpathTEMP.IsChecked == true;
@@ -180,10 +197,10 @@ namespace ESPEDfGK
         //*****************************************************************************************
         private int ParseLineNumber(string line)
         {
-            int i=line.IndexOf(" (");
+            int i = line.IndexOf(" (");
             if (i >= 0)
             {
-                line=line.Substring(0, i).Trim();
+                line = line.Substring(0, i).Trim();
             }
 
             return int.Parse(line);
@@ -228,17 +245,17 @@ namespace ESPEDfGK
 
             foreach (TraceItem ti in LBExceptionList.ItemsSource)
             {
-                clpboardtext += ti.Addr+" "+
-                                ti.Name + " "+
-                                ti.SourcecodeFile + " "+
-                                ti.SourcecodeLine + " "+
+                clpboardtext += ti.Addr + " " +
+                                ti.Name + " " +
+                                ti.SourcecodeFile + " " +
+                                ti.SourcecodeLine + " " +
                                 Environment.NewLine;
             }
             Clipboard.SetText(clpboardtext);
 
             // Visuelle Rückkopplung der Aktion
-            BTnCopyToClipboard.Visibility= Visibility.Collapsed;
-            BTnCopyToClipboardDone.Visibility= Visibility.Visible;
+            BTnCopyToClipboard.Visibility = Visibility.Collapsed;
+            BTnCopyToClipboardDone.Visibility = Visibility.Visible;
             DispatcherTimer timer = new();
             timer.Interval = TimeSpan.FromSeconds(2);
             timer.Tick += (s, a) =>

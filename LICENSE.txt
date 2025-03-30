@@ -21,6 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Persons granted are all persons and companys except
-  * the company of Siemens (Siemens Aktiengesellschaft, 80333 München) and
+  * the company of Siemens (Siemens Aktiengesellschaft, 80333 MÃ¼nchen) and
   * any subsidiary of Siemens, 
   * any person or company delivering this software to Siemens.

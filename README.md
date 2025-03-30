@@ -1,20 +1,43 @@
 # ESP32/ESP8266 Exception Decoder for Generation Klick
 
-So in their endless wisdom the Arduino IDE 2.0 has different priorities than to recreate the 
-old infrastructure and https://github.com/me-no-dev/EspExceptionDecoder does not work anymore.
+ESPEDfGK will decode ESP8266 & ESP32 exceptions and show the source code where it happend.
 
-And /me being too lazy to use the existing command line version from 
-https://github.com/littleyoda/EspStackTraceDecoder does instead build a C# WPF app to help me.
+It can be fully automated to a point where exceptions are catched automatically and passed to ESPEDfGK.
 
-Annoyingly the cut-and-paste from the serial monitor seems to have usage quirks I do not understand. So I added a serial monitor, too. It is very convinient, just click and go.
+## the manual mode (don't do that!)
+
+If an exception happens, copy the serial output from the IDE into the window of ESPEDfGK. Create an 
+up to date binary (Alt + Ctrl + S). Decode.
+
+## the serial mode (much better!)
+
+Disconnect the Arduino IDE serial monitor, connect ESPEDfGKs serial monitor and wait for the exception to 
+happen. Click the RED button on the serial monitor tab. Create an up to date binary (Alt + Ctrl + S). 
+Decode.
+
+## the Serial Monitor Mode (you will love it!)
+
+Replace the Arduino IDE serial monitor with an new one: https://github.com/holgerlembke/serial-monitor 
+
+It will catch exception automatically, no need to watch for it or wait for it. If exceptions happen they
+will be tracked.
+
+Click the RED button on the Decode tab. Create an up to date binary (Alt + Ctrl + S). Decode.
+
+# Installation
+
+On the Settings tab you need to add the path to __xtensa-esp-elf-addr2line.exe_ Just use the buttons, it 
+might need some time to find all the variouse verions on you system. It does not matter much which you
+choose, mosst of the times the freshes is a good choice.
+
 
 This is a work in progress thing. I do enhancements, fixes and debugging as I need. 
 
 # How it looks
 
-![this is it](https://raw.githubusercontent.com/holgerlembke/ESPEDfGK/master/screenshots/screen1.png)
+![this is it](https://raw.githubusercontent.com/holgerlembke/ESPEDfGK/master/screenshots/ESPEDfGK1.jpg)
 
-![this is it](https://raw.githubusercontent.com/holgerlembke/ESPEDfGK/master/screenshots/screen2.png)
+![this is it](https://raw.githubusercontent.com/holgerlembke/ESPEDfGK/master/screenshots/ESPEDfGK2.jpg)
 
 # Install
 

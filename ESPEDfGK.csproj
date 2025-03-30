@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>1.2025.62.326</AssemblyVersion>
+    <AssemblyVersion>1.2025.89.404</AssemblyVersion>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -13,6 +13,10 @@
     <None Remove="exceptioncodes.json" />
     <None Remove="icon.ico" />
     <None Remove="wicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Arduino\Arduino CLI\serial-monitor-c#\serial-monitor\ExceptionScanner.cs" Link="ExceptionScanner.cs" />
   </ItemGroup>
 
   <ItemGroup>

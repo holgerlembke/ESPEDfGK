@@ -1,7 +1,9 @@
 ﻿
 using System;
 using System.IO.Ports;
+using System.Text;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace ESPEDfGK
@@ -21,7 +23,10 @@ namespace ESPEDfGK
         // lots of this is cut/paste from https://github.com/minhncedutw/wpf-serial-communication
 
         SerialPort serialPort = new SerialPort();
-        string recievedData;
+        ExceptionScanner.ExceptionScanner exceptionscanner = new();
+        string serprotocol = "";
+        const int serprotocolmax = 5 * 1024;
+        string exceptionmsg = "";
 
         //*****************************************************************************************
         private void BtnOpenSermonitor(object sender, RoutedEventArgs e)
@@ -37,6 +42,8 @@ namespace ESPEDfGK
                 serialPort.DataReceived += new SerialDataReceivedEventHandler(serialPort_DataRecieved);
                 btnOpen.Visibility = Visibility.Collapsed;
                 btnClose.Visibility = Visibility.Visible;
+                exceptionmsg = "";
+                BtnCopyExceptionToAnalyzer.Background = oldcolor;
             }
             catch (Exception err)
             {
@@ -57,7 +64,7 @@ namespace ESPEDfGK
         private void serialPort_DataRecieved(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             // Collecting the characters received to our 'buffer' (string).
-            recievedData = serialPort.ReadExisting();
+            string recievedData = serialPort.ReadExisting();
 
             // Delegate a function to display the received data.
             Dispatcher.Invoke(DispatcherPriority.Send, new UpdateUiTextDelegate(DataWrited), recievedData);
@@ -71,22 +78,90 @@ namespace ESPEDfGK
                 tBoxInData.Text = tBoxInData.Text.Remove(0, 1024);
             }
 
+            // Exception-Scanner
+            if (serprotocol.Length > serprotocolmax)
+            {
+                serprotocol = serprotocol.Remove(0, serprotocol.Length - serprotocolmax);
+            }
+            serprotocol += text;
+
+            if (exceptionmsg == "")
+            {
+                exceptionmsg = exceptionscanner.checkAndSeparateExceptionText(serprotocol);
+                if (exceptionmsg != "")
+                {
+                    BtnCopyExceptionToAnalyzer.Background = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
+                }
+            }
+
             tBoxInData.Text += text;
+        }
+        //*****************************************************************************************
+        private void tBoxOutDataKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            string[] add = new string[4] { "", "\n", "\r", "\r\n" };
+
+            if ((e.Key == System.Windows.Input.Key.Enter) &&
+                (serialPort.IsOpen) &&
+                (tBoxOutData.Text != ""))
+            {
+                //UTF8?
+                byte[] buffer = Encoding.ASCII.GetBytes(tBoxOutData.Text +
+                                                        add[cBoxOutDataAdd.SelectedIndex]);
+                try
+                {
+                    serialPort.Write(buffer, 0, buffer.Length);
+                }
+                catch (Exception)
+                {
+                    // eat it.
+                }
+                tBoxOutData.Text = "";
+                e.Handled = true;
+            }
         }
         //*****************************************************************************************
         private void BtnClearSermonitor(object sender, RoutedEventArgs e)
         {
+            exceptionmsg = "";
+            serprotocol = "";
             tBoxInData.Text = "";
+            BtnCopyExceptionToAnalyzer.Background = oldcolor;
         }
         //*****************************************************************************************
         private void BtnCopyToAnalyzer(object sender, RoutedEventArgs e)
         {
-            TBStackdump.Text = tBoxInData.Text;
+            if (tBoxInData.Text != "")
+            {
+                TBStackdump.Text = tBoxInData.Text;
+            }
         }
         //*****************************************************************************************
         private void BtnCopyToClipboard(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(tBoxInData.Text);
+            if (tBoxInData.Text != "")
+            {
+                Clipboard.SetText(tBoxInData.Text);
+            }
+        }
+        //*****************************************************************************************
+        private void BtnCopyExceptionToAnalyzerClick(object sender, RoutedEventArgs e)
+        {
+            if (exceptionmsg != "")
+            {
+                TBStackdump.Text = exceptionmsg;
+                BtnCopyExceptionToAnalyzer.Background = oldcolor;
+                serprotocol = "";
+                exceptionmsg = "";
+            }
+        }
+        //*****************************************************************************************
+        private void cBoxDropDownOpened(object sender, EventArgs e)
+        {
+            string s = cBoxComPort.Text;
+            cBoxComPort.Items.Clear();
+            RefreshPortList();
+            cBoxComPort.Text = s;
         }
     }
 }
